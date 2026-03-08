@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Usage Survey</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Main card container */
+        .card {
+            background: white;
+            padding: 35px 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Header styling */
+        h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 600;
+            border-left: 5px solid #667eea;
+            padding-left: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Question box styling */
+        .q-box {
+            margin-bottom: 25px;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8f9ff;
+            border-left: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .q-box:hover {
+            background: white;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Label styling */
+        label {
+            font-weight: 600;
+            display: block;
+            margin-bottom: 15px;
+            color: #2d3748;
+            font-size: 16px;
+            letter-spacing: 0.3px;
+        }
+
+        /* Radio and checkbox containers */
+        .q-box input[type="radio"],
+        .q-box input[type="checkbox"] {
+            margin-right: 8px;
+            margin-left: 5px;
+            accent-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .q-box br + input[type="radio"],
+        .q-box br + input[type="checkbox"] {
+            margin-top: 8px;
+        }
+
+        /* Text input styling */
+        .q-box input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+            margin-top: 5px;
+        }
+
+        .q-box input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Textarea styling */
+        .q-box textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            transition: all 0.3s;
+            margin-top: 5px;
+        }
+
+        .q-box textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* Flash message styling */
+        .flash-message {
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            color: #155724;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Button styling */
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Radio group styling */
+        .radio-group {
+            display: inline-block;
+            margin-right: 15px;
+        }
+
+        /* Number scale styling for question 2 */
+        .q-box .radio-group {
+            background: #edf2f7;
+            padding: 5px 10px;
+            border-radius: 20px;
+            margin: 5px 5px 5px 0;
+        }
+
+        .q-box .radio-group:hover {
+            background: #e2e8f0;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            h2 {
+                font-size: 24px;
+            }
+            
+            .q-box {
+                padding: 15px;
+            }
+            
+            .radio-group {
+                display: block;
+                margin: 8px 0;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h2>⚡ Utility Management Survey</h2>
+        <form action="/submit" method="POST">
+            
+            <div class="q-box">
+                <label>📊 1. How do you track electricity usage?</label>
+                <input type="radio" name="q1_tracking" value="Manual Meter" required> Manual Meter<br>
+                <input type="radio" name="q1_tracking" value="Monthly Bill"> Monthly Bill<br>
+                <input type="radio" name="q1_tracking" value="App"> Third-party App<br>
+                <input type="radio" name="q1_tracking" value="None"> No Tracking<br>
+                <input type="radio" name="q1_tracking" value="1 and 2"> Manual + Monthly Bill
+            </div>
+
+            <div class="q-box">
+                <label>😲 2. High bill/token surprises? (1=Never, 5=Monthly)</label>
+                <span class="radio-group">1 <input type="radio" name="q2_surprise" value="1" required></span>
+                <span class="radio-group">2 <input type="radio" name="q2_surprise" value="2"></span>
+                <span class="radio-group">3 <input type="radio" name="q2_surprise" value="3"></span>
+                <span class="radio-group">4 <input type="radio" name="q2_surprise" value="4"></span>
+                <span class="radio-group">5 <input type="radio" name="q2_surprise" value="5"></span>
+            </div>
+
+            <div class="q-box">
+                <label>💭 3. Biggest frustration with electricity management?</label>
+                <input type="text" name="q3_frustration" placeholder="e.g., Unexpected bills, tracking usage..." style="width:100%">
+            </div>
+
+            <div class="q-box">
+                <label>✨ 4. Helpful features? (Check all that apply)</label>
+                <input type="checkbox" name="q4_features" value="Low Token Alerts"> Low Token Alerts<br>
+                <input type="checkbox" name="q4_features" value="Usage Graphs"> Daily Usage Graphs<br>
+                <input type="checkbox" name="q4_features" value="Projected Bill"> Projected Bill<br>
+                <input type="checkbox" name="q4_features" value="Appliance Breakdown"> Appliance Breakdown
+            </div>
+
+            <div class="q-box">
+                <label>🔔 5. Low Token Notification preference?</label>
+                <input type="radio" name="q5_notif" value="3 Days"> ⏰ 3 Days Left<br>
+                <input type="radio" name="q5_notif" value="Currency"> 💰 Specific Amount ($5)<br>
+                <input type="radio" name="q5_notif" value="Critical"> ⚠️ Critical (< 24h)
+            </div>
+
+            <div class="q-box">
+                <label>📈 6. Would a 'Projected Bill' feature change your usage habits?</label>
+                <input type="radio" name="q6_habits" value="Yes"> Yes, definitely<br>
+                <input type="radio" name="q6_habits" value="Maybe"> Maybe, I'd consider it<br>
+                <input type="radio" name="q6_habits" value="No"> No, probably not
+            </div>
+
+            <div class="q-box">
+                <label>💡 7. If the app could do ONE thing to help you?</label>
+                <textarea name="q7_one_thing" rows="3" placeholder="Tell us your ideal feature..."></textarea>
+            </div>
+
+            <button type="submit">✨ Submit Survey & Start Over</button>
+        </form>
+    </div>
+</body>
+</html>
