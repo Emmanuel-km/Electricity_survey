@@ -55,5 +55,11 @@ def submit():
     # 5. RELOAD: This refreshes the current tab back to the empty form
     return redirect(url_for('index'))
 
+
+from flask import send_file
+@app.route("/download")
+def download():
+    return send_file(CSV_FILE, as_attachment=True)
+
 if __name__ == '__main__':
     app.run(debug=True)
