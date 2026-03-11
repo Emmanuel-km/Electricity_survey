@@ -1,24 +1,21 @@
-
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-GITHUB_USER = "Emmanuel-km"           # replace with your GitHub username
-GITHUB_REPO = "csv_file"             # replace with your repo name
-FILE_PATH = "survey_results.csv"        # path in repo
 import csv
-import os
 import io
 import base64
+import os
 import requests
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash
 
 app = Flask(__name__)
-app.secret_key = "secret_key_for_session" # Change this for production
+# Render will also need a SECRET_KEY for flash messages to work
+app.secret_key = os.getenv("SECRET_KEY", "default_fallback_key")
 
 # --- GitHub Configuration ---
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN") # Best to use os.getenv("GITHUB_TOKEN")
+# Pulling the key you set in Render
+GITHUB_TOKEN = os.getenv("GITHUB") 
 GITHUB_USER = "Emmanuel-km"
 GITHUB_REPO = "csv_file"
-FILE_PATH = "survey_results.csv"
+FILE_PATH = "survey.csv" 
 URL = f"https://api.github.com/repos/{GITHUB_USER}/{GITHUB_REPO}/contents/{FILE_PATH}"
 
 def append_to_github_csv(new_data_dict):
@@ -27,48 +24,48 @@ def append_to_github_csv(new_data_dict):
         "Accept": "application/vnd.github.v3+json"
     }
 
-    # 1. Get current file data from GitHub
+    # 1. Fetch existing file to get the 'sha' and current content
     response = requests.get(URL, headers=headers)
     sha = None
-    content = ""
+    existing_content = ""
     
     if response.status_code == 200:
         file_json = response.json()
         sha = file_json['sha']
-        # Decode existing content
-        content = base64.b64decode(file_json['content']).decode('utf-8')
+        existing_content = base64.b64decode(file_json['content']).decode('utf-8')
     elif response.status_code != 404:
-        return False, f"GitHub Error: {response.status_code}"
+        return False, f"GitHub connection failed: {response.status_code}"
 
-    # 2. Append new row using in-memory string buffer
+    # 2. Append the new row in RAM
     output = io.StringIO()
     fieldnames = ['timestamp', 'q1_tracking', 'q2_surprise', 'q3_frustration', 
                   'q4_features', 'q5_notif', 'q6_habits', 'q7_one_thing']
     
     writer = csv.DictWriter(output, fieldnames=fieldnames)
     
-    # If the file is totally new, start with a header
-    if not content:
+    # If file is brand new, write the header first
+    if not existing_content:
         writer.writeheader()
     
     writer.writerow(new_data_dict)
-    new_row = output.getvalue()
+    new_row_csv = output.getvalue()
 
-    # Combine: Existing data + newline (if needed) + new row
-    if content and not content.endswith('\n'):
-        content += '\n'
-    updated_content = content + new_row
+    # Combine existing content + new row
+    if existing_content and not existing_content.endswith('\n'):
+        existing_content += '\n'
+    updated_full_content = existing_content + new_row_csv
 
-    # 3. Push updated content back to GitHub
-    encoded_content = base64.b64encode(updated_content.encode('utf-8')).decode('utf-8')
+    # 3. Encode and Push back to GitHub
+    encoded_bytes = base64.b64encode(updated_full_content.encode('utf-8'))
+    encoded_string = encoded_bytes.decode('utf-8')
     
     payload = {
-        "message": f"New response at {new_data_dict['timestamp']}",
-        "content": encoded_content,
-        "sha": sha # GitHub requires the SHA to update existing files
+        "message": f"Survey entry: {new_data_dict['timestamp']}",
+        "content": encoded_string,
+        "sha": sha
     }
 
-    # If file didn't exist (404), remove 'sha' from payload to create it
+    # Remove sha if creating a new file
     if not sha:
         del payload["sha"]
 
@@ -81,7 +78,7 @@ def index():
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    # Gather data and generate timestamp
+    # Capture inputs
     form_data = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "q1_tracking": request.form.get('q1_tracking'),
@@ -93,14 +90,19 @@ def submit():
         "q7_one_thing": request.form.get('q7_one_thing')
     }
 
-    success, error_msg = append_to_github_csv(form_data)
+    success, error_info = append_to_github_csv(form_data)
 
     if success:
-        flash("Thank you! Response saved successfully.")
+        flash("Response saved! The form is ready for the next person.")
     else:
-        flash(f"Error saving response: {error_msg}")
+        # Useful for debugging if GitHub rejects the token
+        print(f"Error: {error_info}")
+        flash("Submission failed. Please try again.")
 
+    # Reloads the tab by redirecting to the index
     return redirect(url_for('index'))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Render uses the PORT environment variable
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
