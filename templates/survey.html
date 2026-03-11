@@ -21,7 +21,25 @@
             min-height: 100vh;
             line-height: 1.6;
         }
-
+        .badge {
+            display: inline-block;
+            background: #38bdf822;
+            color: #38bdf8;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        h2 { color: #ffffff; margin-top: 0; font-size: 32px; letter-spacing: -0.5px; }
+        h2 span { color: #38bdf8; }
+        .welcome-text {
+            color: #94a3b8;
+            font-size: 16px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
         /* Main card container */
         .card {
             background: white;
@@ -187,7 +205,15 @@
             border-radius: 20px;
             margin: 5px 5px 5px 0;
         }
-
+        .info-box { 
+            background-color: #0ea5e9; /* Vibrant Blue */
+            color: #ffffff;
+            padding: 20px; 
+            margin-bottom: 30px; 
+            border-radius: 8px; 
+            line-height: 1.5;
+            font-weight: 500;
+        }
         .q-box .radio-group:hover {
             background: #e2e8f0;
         }
@@ -246,6 +272,21 @@
             {% endif %}
         {% endwith %}
 
+
+
+
+        <br><br>
+        <span class="badge">⏱️ 2 Minute Survey</span>
+        <h2>Help us build <span>Your Energy App</span></h2>
+        
+        <p class="welcome-text">
+            Hi there! We’re on a mission to end the stress of unexpected electricity bills and "blackout" surprises. We'd love to hear your thoughts.
+        </p>
+        
+        <div class="info-box">
+            <strong>Your voice is the blueprint!</strong> This isn't just a questionnaire—it's the foundation for a reminder tool that monitors usage, sends low-token alerts, and puts you in total control. By answering these 7 questions, you're helping us build the exact tool you need.
+        </div>
+
         <h2>⚡ Utility Management Survey</h2>
         <form action="/submit" method="POST">
             
@@ -299,7 +340,7 @@
                 <textarea name="q7_one_thing" rows="3" placeholder="Tell us your ideal feature..."></textarea>
             </div>
 
-            <button type="submit">✨ Submit Survey & Start Over</button>
+            <button type="submit">✨ Submit Survey</button>
         </form>
     </div>
 </body>
