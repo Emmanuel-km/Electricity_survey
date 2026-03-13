@@ -101,6 +101,38 @@ def submit():
 
     # Reloads the tab by redirecting to the index
     return redirect(url_for('index'))
+from flask import Response # Add Response to your imports
+
+# ... (keep your existing GITHUB config and imports)
+
+@app.route('/download')
+def download_csv():
+    auth_key = request.args.get('key')
+    if auth_key != "wne": 
+        return "Unauthorized", 403
+
+    headers = {
+        "Authorization": f"token {GITHUB_TOKEN}",
+        "Accept": "application/vnd.github.v3+json"
+    }
+
+    # 1. Fetch the file from GitHub
+    response = requests.get(URL, headers=headers)
+    
+    if response.status_code == 200:
+        file_json = response.json()
+        # 2. Decode the content
+        csv_content = base64.b64decode(file_json['content']).decode('utf-8')
+        
+        # 3. Return as a downloadable file attachment
+        return Response(
+            csv_content,
+            mimetype="text/csv",
+            headers={"Content-disposition": "attachment; filename=survey_results.csv"}
+        )
+    else:
+        return f"Failed to fetch data from GitHub: {response.status_code}", 500
+    
 
 if __name__ == "__main__":
     # Render uses the PORT environment variable
