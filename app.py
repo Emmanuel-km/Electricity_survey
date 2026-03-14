@@ -108,7 +108,7 @@ from flask import Response # Add Response to your imports
 @app.route('/download')
 def download_csv():
     auth_key = request.args.get('key')
-    if auth_key != "wnk": 
+    if auth_key != "wne": 
         return "Unauthorized", 403
 
     headers = {
